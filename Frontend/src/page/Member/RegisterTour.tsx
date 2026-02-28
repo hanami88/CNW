@@ -10,8 +10,6 @@ export default function RegisterTour() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Giả lập gọi API
     console.log("Đăng ký tour:", {
       tourId: id,
       name,
