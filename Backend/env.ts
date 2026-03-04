@@ -15,4 +15,5 @@ export const ENV = {
   BACKEND_URL: getEnv("BACKEND_URL"),
   PASSWORD_DB: getEnv("PASSWORD_DB"),
   DATABASE: getEnv("DATABASE"),
+  SECRET_KEY: getEnv("SECRET_KEY"),
 };

@@ -1,16 +1,17 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 export default function RegisterPage() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [full_name, setFull_name] = useState("");
-  const [birthday, setBirthday] = useState("");
-  const [address, setAddress] = useState("");
-  const [email, setEmail] = useState("");
-  const [gender, setGender] = useState("");
-
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [full_name, setFull_name] = useState<string>("");
+  const [birthday, setBirthday] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [gender, setGender] = useState<string>("");
+  const navigate = useNavigate();
   const register = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -21,14 +22,19 @@ export default function RegisterPage() {
         birthday,
         address,
         email,
+        phone,
         gender,
       });
-      console.log(res.data);
+      if (res.data.success) {
+        alert("Đăng Ký Thành Công");
+        navigate("/login");
+      } else {
+        alert(res.data.message);
+      }
     } catch (err) {
       console.log("Lỗi Đăng Ký:", err);
     }
   };
-
   return (
     <>
       <form onSubmit={register}>
@@ -41,6 +47,7 @@ export default function RegisterPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Mật khẩu"
+          type="password"
         />
         <input
           value={full_name}
@@ -61,6 +68,12 @@ export default function RegisterPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
+          type="email"
+        />
+        <input
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="Phone"
         />
         <select value={gender} onChange={(e) => setGender(e.target.value)}>
           <option value="">Chọn giới tính</option>
