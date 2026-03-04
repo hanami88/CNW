@@ -13,7 +13,7 @@ export default function Nav() {
         justifyContent: "center",
       }}
     >
-      <Link to="/register-tour">Tạo Tour</Link>
+      <Link to="/create-tour">Tạo Tour</Link>
       <Link to="/list-tour">Danh Sách Tour</Link>
     </nav>
   );

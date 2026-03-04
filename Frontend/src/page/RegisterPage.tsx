@@ -15,16 +15,19 @@ export default function RegisterPage() {
   const register = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:3000/api/register", {
-        username,
-        password,
-        full_name,
-        birthday,
-        address,
-        email,
-        phone,
-        gender,
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/register`,
+        {
+          username,
+          password,
+          full_name,
+          birthday,
+          address,
+          email,
+          phone,
+          gender,
+        },
+      );
       if (res.data.success) {
         alert("Đăng Ký Thành Công");
         navigate("/login");

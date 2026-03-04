@@ -1,49 +1,29 @@
 import { useNavigate } from "react-router-dom";
-export interface Tour {
-  id: number;
-  name: string;
-  location: string;
-  cost: number;
-  maxParticipants: number;
-}
-const tours: Tour[] = [
-  {
-    id: 1,
-    name: "Tour Đà Lạt",
-    location: "Đà Lạt",
-    cost: 3000000,
-    maxParticipants: 20,
-  },
-  {
-    id: 2,
-    name: "Tour Nhật Bản",
-    location: "Tokyo",
-    cost: 25000000,
-    maxParticipants: 15,
-  },
-];
-
-export default function TourList() {
+export default function TourList({ listTour }: { listTour: any }) {
   const navigate = useNavigate();
-
+  if (!listTour) {
+    return <div>loading</div>;
+  }
   return (
     <div style={{ padding: 20 }}>
       <h2>Danh sách Tour</h2>
-
-      {tours.map((tour) => (
+      {listTour.map((tour: any) => (
         <div
-          key={tour.id}
+          key={tour.MaTour}
           style={{
             border: "1px solid #ccc",
             padding: 10,
             marginBottom: 10,
           }}
         >
-          <h3>{tour.name}</h3>
-          <p>Địa điểm: {tour.location}</p>
-          <p>Chi phí: {tour.cost.toLocaleString()} VNĐ</p>
-          <p>Số lượng tối đa: {tour.maxParticipants}</p>
-
+          <h3>{tour.TenTour}</h3>
+          <p>Địa điểm: {tour.DiaDiem}</p>
+          <p>Ngày Khởi Hành: {tour.SoLuongNguoiToiDa}</p>
+          <p>Ngày Về: {tour.SoLuongNguoiToiDa}</p>
+          <p>Ngày Kết thúc đăng ký : {tour.SoLuongNguoiToiDa}</p>
+          <p>Số lượng tối đa: {tour.SoLuongNguoiToiDa}</p>
+          <p>Lịch Trình: {tour.LichTrinh}</p>
+          <p>Chi phí: {tour.ChiPhi.toLocaleString()} VNĐ</p>
           <button onClick={() => navigate(`/register-tour`)}>Đăng ký</button>
         </div>
       ))}

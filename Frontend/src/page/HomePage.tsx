@@ -1,6 +1,9 @@
+import { Navigate } from "react-router-dom";
 import Nav from "../components/Nav";
 export default function HomePage({ user }: { user: any }) {
-  console.log(user);
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
   return (
     <>
       <Nav />

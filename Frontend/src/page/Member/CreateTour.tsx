@@ -1,35 +1,140 @@
+import axios from "axios";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 export default function CreateTour() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    place: "",
+    date_start: "",
+    date_end: "",
+    date_over: "",
+    numberOfMembers: 0,
+    travel: "",
+    cost: "",
+    tour: "Tour Dài Ngày",
+    phamvi: "Trong Nước",
+  });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "numberOfMembers" ? Number(value) : value,
+    }));
+  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/member/createTour`,
+        formData,
+        { withCredentials: true },
+      );
+      if (res.data.success) {
+        alert("Tạo tour thành công!");
+        navigate("/list-tour");
+      } else {
+        alert(res.data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Lỗi khi tạo tour");
+    }
+  };
+
   return (
-    <form action="">
-      <label htmlFor="name">Tên tour</label>
-      <input type="text" name="name" />
-      <label htmlFor="place">Địa điểm</label>
-      <input type="text" name="place" />
-      <label htmlFor="date-start">Ngày khởi hành</label>
-      <input type="date" name="date-start" />
-      <label htmlFor="date-end">Ngày về </label>
-      <input type="date" name="date-end" />
-      <label htmlFor="date-over">Ngày hết hạn đăng ký </label>
-      <input type="date" name="date-over" />
-      <label htmlFor="numberOfMembers">Số lượng người tối đa</label>
-      <input type="number" name="numberOfMembers" />
-      <label htmlFor="travel">lịch trình </label>
-      <input type="text" name="travel" />
-      <label htmlFor="cost">Chi phí </label>
-      <input type="text" name="cost" />
-      <label htmlFor="tour">Loại tour </label>
-      <select name="tour" id="">
-        <option value="dai">tour dài ngày </option>
-        <option value="ngan">tour ngắn ngày </option>
-        <option value="nghiduong">tour nghỉ dưỡng</option>
+    <form onSubmit={handleSubmit}>
+      <label>Tên tour</label>
+      <input
+        type="text"
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+        required
+      />
+
+      <label>Địa điểm</label>
+      <input
+        type="text"
+        name="place"
+        value={formData.place}
+        onChange={handleChange}
+        required
+      />
+
+      <label>Ngày khởi hành</label>
+      <input
+        type="date"
+        name="date_start"
+        value={formData.date_start}
+        onChange={handleChange}
+        required
+      />
+
+      <label>Ngày về</label>
+      <input
+        type="date"
+        name="date_end"
+        value={formData.date_end}
+        onChange={handleChange}
+        required
+      />
+
+      <label>Ngày hết hạn đăng ký</label>
+      <input
+        type="date"
+        name="date_over"
+        value={formData.date_over}
+        onChange={handleChange}
+        required
+      />
+
+      <label>Số lượng người tối đa</label>
+      <input
+        type="number"
+        name="numberOfMembers"
+        value={formData.numberOfMembers}
+        onChange={handleChange}
+        required
+      />
+
+      <label>Lịch trình</label>
+      <input
+        type="text"
+        name="travel"
+        value={formData.travel}
+        onChange={handleChange}
+        required
+      />
+
+      <label>Chi phí</label>
+      <input
+        type="text"
+        name="cost"
+        value={formData.cost}
+        onChange={handleChange}
+        required
+      />
+
+      <label>Loại tour</label>
+      <select name="tour" value={formData.tour} onChange={handleChange}>
+        <option value="Tour Dài Ngày">Tour dài ngày</option>
+        <option value="Tour Ngắn Ngày">Tour ngắn ngày</option>
+        <option value="Tour Nghỉ Dưỡng">Tour nghỉ dưỡng</option>
       </select>
-      <label htmlFor="phamvi">Phạm vi</label>
-      <select name="phamvi" id="">
-        <option value="trongNuoc">Trong nước</option>
-        <option value="chauA">Châu Á</option>
-        <option value="chauAu">Châu Âu</option>
+
+      <label>Phạm vi</label>
+      <select name="phamvi" value={formData.phamvi} onChange={handleChange}>
+        <option value="Trong Nước">Trong nước</option>
+        <option value="Châu Á">Châu Á</option>
+        <option value="Châu Âu">Châu Âu</option>
       </select>
-      <button>Tạo tour</button>
+
+      <button type="submit">Tạo tour</button>
     </form>
   );
 }

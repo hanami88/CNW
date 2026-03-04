@@ -1,15 +1,23 @@
 import axios from "axios";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-export default function LoginPage() {
+export default function LoginPage({
+  setUser,
+  setListTour,
+}: {
+  setUser: any;
+  setListTour: any;
+}) {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const navigate = useNavigate();
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/login",
+        `${import.meta.env.VITE_BACKEND_URL}/api/login`,
         {
           username,
           password,
@@ -18,6 +26,10 @@ export default function LoginPage() {
       );
       if (res.data.success) {
         alert(res.data.message);
+        setUser(res.data.user);
+        setListTour(res.data.listTour);
+
+        navigate("/");
       } else {
         alert(res.data.message);
       }
