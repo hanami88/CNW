@@ -2,6 +2,15 @@ import type { Request, Response } from "express";
 import { pool } from "../db/connectDB.js";
 import jwt from "jsonwebtoken";
 import { ENV } from "../../../env.js";
+const JWT = (token: string) => {
+  try {
+    const decoded = jwt.verify(token, ENV.SECRET_KEY) as { userId: string };
+    return decoded.userId;
+  } catch (error) {
+    console.log("hethan");
+    return null;
+  }
+};
 class HomePage {
   login = async (req: Request, res: Response) => {
     try {
@@ -16,26 +25,25 @@ class HomePage {
           message: "Vui Lòng Nhập Password",
         });
       }
-      const [user]: any = await pool.execute(
+      const [curUser]: any = await pool.execute(
         `SELECT * FROM THANHVIEN WHERE TenDangNhap=?`,
         [username],
       );
-      if (user.length <= 0) {
+      if (curUser.length <= 0) {
         return res.json({
           message: "Tên đăng nhập không tồn tại",
           success: false,
         });
       }
-      if (user[0].MatKhau != password) {
+      if (curUser[0].MatKhau != password) {
         return res.json({
           message: "Sai mật khẩu",
           success: false,
         });
       }
-      console.log();
       const accessToken = jwt.sign(
         {
-          userId: user[0].MaTV,
+          userId: curUser[0].MaTV,
         },
         ENV.SECRET_KEY,
         {
@@ -44,7 +52,7 @@ class HomePage {
       );
       const refreshToken = jwt.sign(
         {
-          userId: user[0].MaTV,
+          userId: curUser[0].MaTV,
         },
         ENV.SECRET_KEY,
         {
@@ -61,13 +69,16 @@ class HomePage {
         httpOnly: true,
         secure: true,
         sameSite: "strict",
-        maxAge: 15 * 60 * 1000,
+        maxAge: 15 * 24 * 60 * 60 * 1000,
       });
+      const [curListTour]: any = await pool.execute("SELECT * FROM TOUR");
       return res.json({
         message: "Đăng Nhập Thành Công",
         success: true,
         refreshToken,
         accessToken,
+        user: curUser[0],
+        listTour: curListTour,
       });
     } catch (err) {
       return res.json({
@@ -160,17 +171,14 @@ class HomePage {
           success: false,
         });
       }
-      const decoded = jwt.verify(refreshToken, ENV.SECRET_KEY) as {
-        userId: string;
-      };
-      const userId = decoded.userId;
+      const userId = JWT(refreshToken);
       const [curUser]: any = await pool.execute(
         "SELECT * FROM THANHVIEN WHERE MaTV=?",
         [userId ?? null],
       );
       const newAccessToken = jwt.sign(
         {
-          id: userId,
+          userId: userId,
         },
         ENV.SECRET_KEY,
         {
@@ -183,23 +191,43 @@ class HomePage {
         sameSite: "strict",
         maxAge: 15 * 60 * 1000,
       });
+      const [curListTour]: any = await pool.execute("SELECT * FROM TOUR");
       return res.json({
         success: true,
         user: curUser[0],
+        listTour: curListTour,
       });
     } else {
-      const decoded = jwt.verify(accessToken, ENV.SECRET_KEY) as {
-        userId: string;
-      };
-      const userId = decoded.userId;
+      const userId = JWT(accessToken);
       const [curUser]: any = await pool.execute(
         "SELECT * FROM THANHVIEN WHERE MaTV=?",
         [userId],
       );
+      const [curListTour]: any = await pool.execute("SELECT * FROM TOUR");
       return res.json({
         success: true,
         user: curUser[0],
+        listTour: curListTour,
       });
+    }
+  };
+  logout = async (req: Request, res: Response) => {
+    try {
+      res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+      });
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+      });
+      return res.json({
+        success: true,
+      });
+    } catch (err) {
+      console.log(err);
     }
   };
 }
