@@ -28,7 +28,6 @@ export default function LoginPage({
         alert(res.data.message);
         setUser(res.data.user);
         setListTour(res.data.listTour);
-
         navigate("/");
       } else {
         alert(res.data.message);

@@ -41,7 +41,10 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/create-tour" element={<CreateTour />} />
         <Route path="/list-tour" element={<ListTour listTour={listTour} />} />
-        <Route path="/register-tour" element={<RegisterTour />} />
+        <Route
+          path="/register-tour/:tourId/:TenTour"
+          element={<RegisterTour />}
+        />
         <Route path="/employee-request" element={<EmployeeRequests />} />
       </Routes>
     </>

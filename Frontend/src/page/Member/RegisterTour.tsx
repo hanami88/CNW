@@ -1,28 +1,36 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import axios from "axios";
 
 export default function RegisterTour() {
-  const { id } = useParams();
+  const { tourId, TenTour } = useParams();
   const navigate = useNavigate();
-
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState(1);
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Đăng ký tour:", {
-      tourId: id,
-      name,
-      quantity,
-    });
-
-    alert("Đăng ký thành công (chờ phê duyệt)");
-    navigate("/register-tour");
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/member/register-tour`,
+        {
+          tourId,
+          quantity,
+        },
+        { withCredentials: true },
+      );
+      if (res.data.success) {
+        alert("Đăng ký thành công (chờ phê duyệt)");
+        navigate("/");
+      } else {
+        alert(res.data.message);
+      }
+    } catch (err) {
+      console.log("Loi Dang ky Tour :" + err);
+    }
   };
-
   return (
     <div style={{ padding: 20 }}>
-      <h2>Đăng ký Tour (ID: {id})</h2>
+      <h2>Đăng ký Tour (Tên Tour : {TenTour})</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Tên thành viên:</label>
@@ -34,7 +42,6 @@ export default function RegisterTour() {
             required
           />
         </div>
-
         <div style={{ marginTop: 10 }}>
           <label>Số lượng người:</label>
           <br />

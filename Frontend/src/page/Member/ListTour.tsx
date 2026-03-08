@@ -24,7 +24,13 @@ export default function TourList({ listTour }: { listTour: any }) {
           <p>Số lượng tối đa: {tour.SoLuongNguoiToiDa}</p>
           <p>Lịch Trình: {tour.LichTrinh}</p>
           <p>Chi phí: {tour.ChiPhi.toLocaleString()} VNĐ</p>
-          <button onClick={() => navigate(`/register-tour`)}>Đăng ký</button>
+          <button
+            onClick={() =>
+              navigate(`/register-tour/${tour.MaTour}/${tour.TenTour}`)
+            }
+          >
+            Đăng ký
+          </button>
         </div>
       ))}
     </div>

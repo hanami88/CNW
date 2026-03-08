@@ -126,7 +126,6 @@ export default function CreateTour() {
         <option value="Tour Ngắn Ngày">Tour ngắn ngày</option>
         <option value="Tour Nghỉ Dưỡng">Tour nghỉ dưỡng</option>
       </select>
-
       <label>Phạm vi</label>
       <select name="phamvi" value={formData.phamvi} onChange={handleChange}>
         <option value="Trong Nước">Trong nước</option>
