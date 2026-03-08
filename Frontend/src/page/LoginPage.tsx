@@ -27,8 +27,13 @@ export default function LoginPage({
       if (res.data.success) {
         alert(res.data.message);
         setUser(res.data.user);
-        setListTour(res.data.listTour);
-        navigate("/");
+        if (res.data.role == "THANHVIEN") {
+          setListTour(res.data.listTour);
+          navigate("/");
+        } else {
+          setListTour(res.data.listRequest);
+          navigate("/employee-request");
+        }
       } else {
         alert(res.data.message);
       }

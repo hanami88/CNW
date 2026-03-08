@@ -45,7 +45,10 @@ function App() {
           path="/register-tour/:tourId/:TenTour"
           element={<RegisterTour />}
         />
-        <Route path="/employee-request" element={<EmployeeRequests />} />
+        <Route
+          path="/employee-request"
+          element={<EmployeeRequests listTour={listTour} />}
+        />
       </Routes>
     </>
   );

@@ -15,49 +15,64 @@ class HomePage {
   login = async (req: Request, res: Response) => {
     try {
       const { username, password } = req.body;
-      if (!username.trim()) {
-        return res.json({
-          message: "Vui Lòng Nhập Username",
-        });
+      if (!username?.trim()) {
+        return res.json({ message: "Vui Lòng Nhập Username" });
       }
-      if (!password.trim()) {
-        return res.json({
-          message: "Vui Lòng Nhập Password",
-        });
+      if (!password?.trim()) {
+        return res.json({ message: "Vui Lòng Nhập Password" });
       }
-      const [curUser]: any = await pool.execute(
-        `SELECT * FROM THANHVIEN WHERE TenDangNhap=?`,
+      const [tv]: any = await pool.execute(
+        "SELECT * FROM THANHVIEN WHERE TenDangNhap=?",
         [username],
       );
-      if (curUser.length <= 0) {
+      const [nv]: any = await pool.execute(
+        "SELECT * FROM NHANVIEN WHERE username=?",
+        [username],
+      );
+      let user = null;
+      let role = "";
+
+      if (tv.length > 0) {
+        user = tv[0];
+        role = "THANHVIEN";
+
+        if (user.MatKhau !== password) {
+          return res.json({
+            message: "Sai mật khẩu",
+            success: false,
+          });
+        }
+      } else if (nv.length > 0) {
+        user = nv[0];
+        role = "NHANVIEN";
+
+        if (user.password !== password) {
+          return res.json({
+            message: "Sai mật khẩu",
+            success: false,
+          });
+        }
+      } else {
         return res.json({
           message: "Tên đăng nhập không tồn tại",
           success: false,
         });
       }
-      if (curUser[0].MatKhau != password) {
-        return res.json({
-          message: "Sai mật khẩu",
-          success: false,
-        });
-      }
       const accessToken = jwt.sign(
         {
-          userId: curUser[0].MaTV,
+          userId: role === "THANHVIEN" ? user.MaTV : user.MaNV,
+          role,
         },
         ENV.SECRET_KEY,
-        {
-          expiresIn: "15m",
-        },
+        { expiresIn: "15m" },
       );
       const refreshToken = jwt.sign(
         {
-          userId: curUser[0].MaTV,
+          userId: role === "THANHVIEN" ? user.MaTV : user.MaNV,
+          role,
         },
         ENV.SECRET_KEY,
-        {
-          expiresIn: "15d",
-        },
+        { expiresIn: "15d" },
       );
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
@@ -71,14 +86,15 @@ class HomePage {
         sameSite: "strict",
         maxAge: 15 * 24 * 60 * 60 * 1000,
       });
-      const [curListTour]: any = await pool.execute("SELECT * FROM TOUR");
+      const [tours]: any = await pool.execute("SELECT * FROM TOUR");
+      const [request]: any = await pool.execute("SELECT * FROM THAMGIATOUR");
       return res.json({
         message: "Đăng Nhập Thành Công",
         success: true,
-        refreshToken,
-        accessToken,
-        user: curUser[0],
-        listTour: curListTour,
+        user,
+        role,
+        listTour: tours,
+        listRequest: request,
       });
     } catch (err) {
       return res.json({
